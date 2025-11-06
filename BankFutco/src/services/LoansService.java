@@ -1,31 +1,41 @@
 package services;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 import model.Loans;
+import repositories.LoansRepository;
 
 public class LoansService implements ILoansService {
-    private final Map<String, Loans> storage = new HashMap<>();
+    private final LoansRepository repository;
+
+    public LoansService() {
+        this(new LoansRepository());
+    }
+
+    public LoansService(LoansRepository repository) {
+        this.repository = repository;
+    }
 
     @Override
     public Loans save(Loans loan) {
-        if (loan == null) return null;
-        String id = UUID.randomUUID().toString();
-        storage.put(id, loan);
-        return loan;
+        if (loan == null) {
+            throw new IllegalArgumentException("Loan no puede ser null");
+        }
+        return repository.save(loan);
     }
 
     @Override
     public Optional<Loans> findById(String id) {
-        return Optional.ofNullable(storage.get(id));
+        return repository.findById(id);
     }
 
     @Override
     public List<Loans> findAll() {
-        return new ArrayList<>(storage.values());
+        return repository.findAll();
     }
 
     @Override
     public boolean deleteById(String id) {
-        return storage.remove(id) != null;
+        return repository.deleteById(id);
     }
 }
