@@ -5,8 +5,8 @@ import java.util.Optional;
 import model.Loans;
 
 public interface ILoansService {
-	Loans save(Loans loan);
-	Optional<Loans> findById(String id); // id = date.toString()
-	List<Loans> findAll();
-	boolean deleteById(String id);
+    Loans save(Loans loan);
+    Optional<Loans> findById(String id); // ahora id = loan.getId()
+    List<Loans> findAll();
+    boolean deleteById(String id);
 }

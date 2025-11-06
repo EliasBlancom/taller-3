@@ -6,36 +6,38 @@ import model.Account;
 import repositories.AccountRepository;
 
 public class AccountService implements IAccountService {
-	private final AccountRepository repository;
+    private final AccountRepository repository;
 
-	// Constructor por defecto: crea e inyecta el repositorio
-	public AccountService() {
-		this(new AccountRepository());
-	}
+    // Constructor por defecto
+    public AccountService() {
+        this(new AccountRepository());
+    }
 
-	// Constructor para inyección
-	public AccountService(AccountRepository repository) {
-		this.repository = repository;
-	}
+    // Constructor para inyección de repositorio
+    public AccountService(AccountRepository repository) {
+        this.repository = repository;
+    }
 
-	@Override
-	public Account save(Account account) {
-		// Delegamos al repositorio (upsert). El repositorio usa un Map para garantizar unicidad por accountNumber.
-		return repository.save(account);
-	}
+    @Override
+    public Account save(Account account) {
+        if (account == null) {
+            throw new IllegalArgumentException("Account no puede ser null");
+        }
+        return repository.save(account);
+    }
 
-	@Override
-	public Optional<Account> findById(String accountNumber) {
-		return repository.findById(accountNumber);
-	}
+    @Override
+    public Optional<Account> findById(String accountNumber) {
+        return repository.findById(accountNumber);
+    }
 
-	@Override
-	public List<Account> findAll() {
-		return repository.findAll();
-	}
+    @Override
+    public List<Account> findAll() {
+        return repository.findAll();
+    }
 
-	@Override
-	public boolean deleteById(String accountNumber) {
-		return repository.deleteById(accountNumber);
-	}
+    @Override
+    public boolean deleteById(String accountNumber) {
+        return repository.deleteById(accountNumber);
+    }
 }
