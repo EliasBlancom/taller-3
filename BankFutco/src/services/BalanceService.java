@@ -24,8 +24,8 @@ public class BalanceService implements IBalanceService {
         return new ArrayList<>(storage.values());
     }
 
-    @Override
+   @Override
     public boolean deleteById(String id) {
-        return storage.remove(id) != null;
-    }
+        return storage.remove(id) != null;
+    }
 }
