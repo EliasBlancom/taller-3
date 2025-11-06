@@ -1,36 +1,31 @@
+import java.math.BigDecimal;
 import java.util.Scanner;
-
-import model.Account;
-import services.AccountService;
+import model.*;
+import services.*;
 
 public class App {
-    private static AccountService accountService= new AccountService(); // Repositorio nulo para este ejemplo
 
-    public static void main(String[] args) throws Exception {
+    private static final AccountService accountService = new AccountService();
+    private static final CardsService cardsService = new CardsService();
+    private static final BalanceService balanceService = new BalanceService();
+    private static final LoansService loansService = new LoansService();
+
+    public static void main(String[] args) {
         try (Scanner sc = new Scanner(System.in)) {
             boolean running = true;
             while (running) {
                 printMainMenu();
                 String option = sc.nextLine().trim();
                 switch (option) {
-                    case "1":
-                        runCrudMenu(sc, "Account");
-                        break;
-                    case "2":
-                        runCrudMenu(sc, "Balance");
-                        break;
-                    case "3":
-                        runCrudMenu(sc, "Loans");
-                        break;
-                    case "4":
-                        runCrudMenu(sc, "Cards");
-                        break;
-                    case "0":
+                    case "1" -> runAccountMenu(sc);
+                    case "2" -> runBalanceMenu(sc);
+                    case "3" -> runLoansMenu(sc);
+                    case "4" -> runCardsMenu(sc);
+                    case "0" -> {
                         running = false;
-                        System.out.println("Saliendo...");
-                        break;
-                    default:
-                        System.out.println("Opción no válida. Intente de nuevo.");
+                        System.out.println("Saliendo del sistema...");
+                    }
+                    default -> System.out.println("Opción no válida. Intente nuevamente.");
                 }
             }
         }
@@ -46,52 +41,148 @@ public class App {
         System.out.print("Seleccione una opción: ");
     }
 
-    private static void runCrudMenu(Scanner sc, String entityName) {
+    // ==============================
+    // CRUD: ACCOUNT
+    // ==============================
+    private static void runAccountMenu(Scanner sc) {
         boolean back = false;
         while (!back) {
-            printCrudMenu(entityName);
+            printCrudMenu("Account");
             String opt = sc.nextLine().trim();
             switch (opt) {
-                case "1":
-                    System.out.println("[" + entityName + "] Crear - placeholder (pedir datos e invocar servicio)");
-                    //Deben tomar los datos por consola, usar Scanner
-                    Account account = new Account("ACC010", "Johanny Valencia", "johanny.valencia@example.com", "3000000001", "Savings", "Calle 20 de Turbaco-Bolivar"); 
-                    accountService.save(account); 
-                    break;
-                case "2":
-                    System.out.print("[" + entityName + "] Leer por id - ingrese id: ");
-                    String id = sc.nextLine().trim();
-                    System.out.println("Buscar " + entityName + " con id=" + id + " - placeholder");
+                case "1" -> { // CREATE
+                    System.out.print("Número de cuenta: ");
+                    String accNum = sc.nextLine();
+                    System.out.print("Nombre: ");
+                    String name = sc.nextLine();
+                    System.out.print("Email: ");
+                    String email = sc.nextLine();
+                    System.out.print("Celular: ");
+                    String mobile = sc.nextLine();
+                    System.out.print("Tipo de cuenta (Savings/Checking): ");
+                    String type = sc.nextLine();
+                    System.out.print("Dirección: ");
+                    String addr = sc.nextLine();
+
+                    Account acc = new Account(accNum, name, email, mobile, type, addr);
+                    accountService.save(acc);
+                    System.out.println("✅ Cuenta creada correctamente.");
+                }
+                case "2" -> { // READ
+                    System.out.print("Ingrese número de cuenta: ");
+                    String id = sc.nextLine();
                     accountService.findById(id).ifPresentOrElse(
-                        acc -> System.out.println("Encontrado: " + acc),
-                        () -> System.out.println(entityName + " con id=" + id + " no encontrado.")
+                        a -> System.out.println("📋 " + a),
+                        () -> System.out.println("⚠️ No se encontró la cuenta.")
                     );
-                    break;
-                case "3":
-                    System.out.println("[" + entityName + "] Listar todos - placeholder");
-                    accountService.findAll().stream().forEach(System.out::println);
-                    break;
-                case "4":
-                    System.out.print("[" + entityName + "] Actualizar - ingrese id: ");
-                    String idUp = sc.nextLine().trim();
-                    System.out.println("Actualizar " + entityName + " id=" + idUp + " - placeholder");
-                    //Deben tomar los datos por consola, usar Scanner
-                    Account updateAccount = new Account("ACC010", "Johanny Valencia", "johanny.valencia@example.com", "3000000001", "Savings", "Calle 20 de Turbaco-Bolivar"); 
-                    accountService.save(updateAccount);
-                    break;
-                case "5":
-                    System.out.print("[" + entityName + "] Eliminar - ingrese id: ");
-                    String idDel = sc.nextLine().trim();
-                    System.out.println("Eliminar " + entityName + " id=" + idDel + " - placeholder");
-                    accountService.deleteById(idDel);
-                    break;
-                case "0":
-                    back = true;
-                    break;
-                default:
-                    System.out.println("Opción no válida. Intente de nuevo.");
+                }
+                case "3" -> { // LIST ALL
+                    accountService.findAll().forEach(System.out::println);
+                }
+                case "4" -> { // UPDATE
+                    System.out.print("Número de cuenta a actualizar: ");
+                    String idUp = sc.nextLine();
+                    accountService.findById(idUp).ifPresentOrElse(acc -> {
+                        System.out.print("Nuevo nombre: ");
+                        acc.setName(sc.nextLine());
+                        System.out.print("Nuevo email: ");
+                        acc.setEmail(sc.nextLine());
+                        System.out.print("Nuevo celular: ");
+                        acc.setMobileNumber(sc.nextLine());
+                        System.out.print("Nuevo tipo de cuenta: ");
+                        acc.setAccountType(sc.nextLine());
+                        System.out.print("Nueva dirección: ");
+                        acc.setAddress(sc.nextLine());
+                        accountService.save(acc);
+                        System.out.println("✅ Cuenta actualizada correctamente.");
+                    }, () -> System.out.println("⚠️ Cuenta no encontrada."));
+                }
+                case "5" -> {
+                    System.out.print("Número de cuenta a eliminar: ");
+                    String idDel = sc.nextLine();
+                    if (accountService.deleteById(idDel)) {
+                        System.out.println("✅ Cuenta eliminada.");
+                    } else {
+                        System.out.println("⚠️ No se encontró esa cuenta.");
+                    }
+                }
+                case "0" -> back = true;
+                default -> System.out.println("Opción inválida.");
             }
         }
+    }
+
+    // ==============================
+    // CRUD: CARDS
+    // ==============================
+    private static void runCardsMenu(Scanner sc) {
+        boolean back = false;
+        while (!back) {
+            printCrudMenu("Cards");
+            String opt = sc.nextLine().trim();
+            switch (opt) {
+                case "1" -> {
+                    System.out.print("Número de tarjeta: ");
+                    String num = sc.nextLine();
+                    System.out.print("Tipo (Credit/Debit): ");
+                    String type = sc.nextLine();
+                    System.out.print("Límite total: ");
+                    BigDecimal limit = new BigDecimal(sc.nextLine());
+                    System.out.print("Monto usado: ");
+                    BigDecimal used = new BigDecimal(sc.nextLine());
+                    BigDecimal available = limit.subtract(used);
+
+                    Cards c = new Cards(num, type, limit, used, available);
+                    cardsService.save(c);
+                    System.out.println("✅ Tarjeta creada.");
+                }
+                case "2" -> {
+                    System.out.print("Número de tarjeta: ");
+                    String id = sc.nextLine();
+                    cardsService.findById(id).ifPresentOrElse(
+                        System.out::println,
+                        () -> System.out.println("⚠️ No encontrada.")
+                    );
+                }
+                case "3" -> cardsService.findAll().forEach(System.out::println);
+                case "4" -> {
+                    System.out.print("Número de tarjeta a actualizar: ");
+                    String idUp = sc.nextLine();
+                    cardsService.findById(idUp).ifPresentOrElse(card -> {
+                        System.out.print("Nuevo tipo: ");
+                        card.setType(sc.nextLine());
+                        System.out.print("Nuevo límite total: ");
+                        card.setTotalLimit(new BigDecimal(sc.nextLine()));
+                        System.out.print("Nuevo monto usado: ");
+                        card.setAmountUsed(new BigDecimal(sc.nextLine()));
+                        card.setAvailable(card.getTotalLimit().subtract(card.getAmountUsed()));
+                        cardsService.save(card);
+                        System.out.println("✅ Tarjeta actualizada.");
+                    }, () -> System.out.println("⚠️ Tarjeta no encontrada."));
+                }
+                case "5" -> {
+                    System.out.print("Número de tarjeta a eliminar: ");
+                    String idDel = sc.nextLine();
+                    cardsService.deleteById(idDel);
+                }
+                case "0" -> back = true;
+                default -> System.out.println("Opción inválida.");
+            }
+        }
+    }
+
+    // ==============================
+    // CRUD: BALANCE
+    // ==============================
+    private static void runBalanceMenu(Scanner sc) {
+        System.out.println("⚠️ BalanceService aún no implementado.");
+    }
+
+    // ==============================
+    // CRUD: LOANS
+    // ==============================
+    private static void runLoansMenu(Scanner sc) {
+        System.out.println("⚠️ LoansService aún no implementado.");
     }
 
     private static void printCrudMenu(String entityName) {
