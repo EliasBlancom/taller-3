@@ -4,54 +4,28 @@ import java.util.*;
 import model.Cards;
 
 public class CardsService implements ICardsService {
-
-    private final List<Cards> cardsList = new ArrayList<>();
-
-   
-    public CardsService() {
-        initData();
-    }
-
-    private void initData() {
-        cardsList.add(new Cards("CARD001", "Credit", new java.math.BigDecimal("5000.00"), new java.math.BigDecimal("1500.00"), new java.math.BigDecimal("3500.00")));
-        cardsList.add(new Cards("CARD002", "Debit", new java.math.BigDecimal("2000.00"), new java.math.BigDecimal("500.00"), new java.math.BigDecimal("1500.00")));
-        cardsList.add(new Cards("CARD003", "Credit", new java.math.BigDecimal("10000.00"), new java.math.BigDecimal("2000.00"), new java.math.BigDecimal("8000.00")));
-    }
+    private final Map<String, Cards> storage = new HashMap<>();
 
     @Override
     public Cards save(Cards card) {
-        if (card == null || card.getCardNumber() == null) {
-            throw new IllegalArgumentException("Card o cardNumber no puede ser null");
-        }
-        
-        deleteById(card.getCardNumber());
-        cardsList.add(card);
-        System.out.println("✅ Tarjeta guardada: " + card.getCardNumber());
+        if (card == null) return null;
+        String id = UUID.randomUUID().toString();
+        storage.put(id, card);
         return card;
     }
 
     @Override
-    public Optional<Cards> findById(String cardNumber) {
-        if (cardNumber == null) return Optional.empty();
-        return cardsList.stream()
-                .filter(c -> cardNumber.equals(c.getCardNumber()))
-                .findFirst();
+    public Optional<Cards> findById(String id) {
+        return Optional.ofNullable(storage.get(id));
     }
 
     @Override
     public List<Cards> findAll() {
-        return new ArrayList<>(cardsList);
+        return new ArrayList<>(storage.values());
     }
 
     @Override
-    public boolean deleteById(String cardNumber) {
-        if (cardNumber == null) return false;
-        boolean removed = cardsList.removeIf(c -> cardNumber.equals(c.getCardNumber()));
-        if (removed) {
-            System.out.println("✅ Tarjeta eliminada: " + cardNumber);
-        } else {
-            System.out.println("⚠️ No se encontró tarjeta: " + cardNumber);
-        }
-        return removed;
+    public boolean deleteById(String id) {
+        return storage.remove(id) != null;
     }
 }
