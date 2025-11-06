@@ -41,9 +41,6 @@ public class App {
         System.out.print("Seleccione una opción: ");
     }
 
-    // ==============================
-    // CRUD: ACCOUNT
-    // ==============================
     private static void runAccountMenu(Scanner sc) {
         boolean back = false;
         while (!back) {
@@ -66,14 +63,14 @@ public class App {
 
                     Account acc = new Account(accNum, name, email, mobile, type, addr);
                     accountService.save(acc);
-                    System.out.println("✅ Cuenta creada correctamente.");
+                    System.out.println("Cuenta creada correctamente.");
                 }
                 case "2" -> { // READ
                     System.out.print("Ingrese número de cuenta: ");
                     String id = sc.nextLine();
                     accountService.findById(id).ifPresentOrElse(
                         a -> System.out.println("📋 " + a),
-                        () -> System.out.println("⚠️ No se encontró la cuenta.")
+                        () -> System.out.println("No se encontró la cuenta.")
                     );
                 }
                 case "3" -> { // LIST ALL
@@ -94,16 +91,16 @@ public class App {
                         System.out.print("Nueva dirección: ");
                         acc.setAddress(sc.nextLine());
                         accountService.save(acc);
-                        System.out.println("✅ Cuenta actualizada correctamente.");
-                    }, () -> System.out.println("⚠️ Cuenta no encontrada."));
+                        System.out.println("Cuenta actualizada correctamente.");
+                    }, () -> System.out.println(" Cuenta no encontrada."));
                 }
                 case "5" -> {
                     System.out.print("Número de cuenta a eliminar: ");
                     String idDel = sc.nextLine();
                     if (accountService.deleteById(idDel)) {
-                        System.out.println("✅ Cuenta eliminada.");
+                        System.out.println("Cuenta eliminada.");
                     } else {
-                        System.out.println("⚠️ No se encontró esa cuenta.");
+                        System.out.println("No se encontró esa cuenta.");
                     }
                 }
                 case "0" -> back = true;
@@ -112,9 +109,7 @@ public class App {
         }
     }
 
-    // ==============================
-    // CRUD: CARDS
-    // ==============================
+
     private static void runCardsMenu(Scanner sc) {
         boolean back = false;
         while (!back) {
@@ -134,14 +129,14 @@ public class App {
 
                     Cards c = new Cards(num, type, limit, used, available);
                     cardsService.save(c);
-                    System.out.println("✅ Tarjeta creada.");
+                    System.out.println("Tarjeta creada.");
                 }
                 case "2" -> {
                     System.out.print("Número de tarjeta: ");
                     String id = sc.nextLine();
                     cardsService.findById(id).ifPresentOrElse(
                         System.out::println,
-                        () -> System.out.println("⚠️ No encontrada.")
+                        () -> System.out.println("No encontrada.")
                     );
                 }
                 case "3" -> cardsService.findAll().forEach(System.out::println);
@@ -157,8 +152,8 @@ public class App {
                         card.setAmountUsed(new BigDecimal(sc.nextLine()));
                         card.setAvailable(card.getTotalLimit().subtract(card.getAmountUsed()));
                         cardsService.save(card);
-                        System.out.println("✅ Tarjeta actualizada.");
-                    }, () -> System.out.println("⚠️ Tarjeta no encontrada."));
+                        System.out.println("Tarjeta actualizada.");
+                    }, () -> System.out.println("Tarjeta no encontrada."));
                 }
                 case "5" -> {
                     System.out.print("Número de tarjeta a eliminar: ");
@@ -171,18 +166,14 @@ public class App {
         }
     }
 
-    // ==============================
-    // CRUD: BALANCE
-    // ==============================
+   
     private static void runBalanceMenu(Scanner sc) {
-        System.out.println("⚠️ BalanceService aún no implementado.");
+        System.out.println("BalanceService aún no implementado.");
     }
 
-    // ==============================
-    // CRUD: LOANS
-    // ==============================
+    
     private static void runLoansMenu(Scanner sc) {
-        System.out.println("⚠️ LoansService aún no implementado.");
+        System.out.println("LoansService aún no implementado.");
     }
 
     private static void printCrudMenu(String entityName) {

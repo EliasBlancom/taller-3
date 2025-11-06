@@ -26,7 +26,7 @@ public class CardsService implements ICardsService {
         
         deleteById(card.getCardNumber());
         cardsList.add(card);
-        System.out.println("✅ Tarjeta guardada: " + card.getCardNumber());
+        System.out.println(" Tarjeta guardada: " + card.getCardNumber());
         return card;
     }
 
@@ -48,9 +48,9 @@ public class CardsService implements ICardsService {
         if (cardNumber == null) return false;
         boolean removed = cardsList.removeIf(c -> cardNumber.equals(c.getCardNumber()));
         if (removed) {
-            System.out.println("✅ Tarjeta eliminada: " + cardNumber);
+            System.out.println(" Tarjeta eliminada: " + cardNumber);
         } else {
-            System.out.println("⚠️ No se encontró tarjeta: " + cardNumber);
+            System.out.println(" No se encontró tarjeta: " + cardNumber);
         }
         return removed;
     }
